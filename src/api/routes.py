@@ -19,41 +19,68 @@ def check_password(hash_password, pasword, salt):
 
 
 @api.route('/user', methods=['POST'])
-def all_user():
-    data=request.json
+def register_user():
+    if request.method =="POST":
+        data = request.json
 
-    if data is None:
-        return jsonify({"msg":"Missing JSON in request"}), 400
-    if data.get("name") is None:
-        return jsonify({"msg":"Missing Parameter"}), 400
-    if data.get("last_name") is None:
-        return jsonify({"msg":"Missing Parameter"}), 400
-    if data.get("email") is None:
-        return jsonify({"msg":"Missing Parameter"}), 400
-    if data.get("password") is None:
-        return jsonify({"msg":"Missing Parameter"}), 400
+        if data is None:
+            return jsonify({"msg":"Missing JSON in request"}), 400
+        if data.get("name") is None:
+            return jsonify({"msg":"Missing Parameter"}), 400
+        if data.get("last_name") is None:
+            return jsonify({"msg":"Missing Parameter"}), 400
+        if data.get("email") is None:
+            return jsonify({"msg":"Missing Parameter"}), 400
+        if data.get("password") is None:
+            return jsonify({"msg":"Missing Parameter"}), 400
+        
+        user=User.query.filter_by(email=data.get("email")).first()
+        if user is not None:
+            return jsonify({"msg":"Email already in use"}), 400
+        
+        password_salt = b64encode(os.urandom(32)).decode('utf-8')
+        password_hash = set_password(data.get("password"), password_salt)
+
+        new_user = User(
+            name=data.get("name"), 	
+            last_name=data.get("last_name"), 	
+            email=data.get("email"), 		
+            password=password_hash,		
+            salt=password_salt		
+        )
+        db.session.add(new_user)
+        try:
+            db.session.commit()
+            return jsonify({"msg":"User succefully register"}) ,201
+        except Exception as error:
+            db.session.rollback()
+            return jsonify ({"msg":"Error register user", "error": str(error)}), 500
+
+
+api.route('/login' , methods =["POST"])
+def login():
+    if request.method== 'POST':
+        data = request.json
+        email = data.get("email" ,None)
+        password =data.get("password" , None)
+
+        if data is None:
+            return jsonify({"msg": "Missing JSON in request"}), 400
+        if email is None:
+            return jsonify({"msg": "Missing Parameter"}), 400
+        if password is None:
+            return jsonify({"msg": "Missing Parameter"}), 400
+
+        user = User.query.filter_by(email=email).one_or_none()
+
+        if user is not None:
+            if check_password(user.password, password, user.password_salt):
+                # Generar un token de acceso para el usuario
+                token = create_access_token(identity=user.id)
+                return jsonify({"token": token}), 200
+        else:
+            return jsonify({"msg": "Bad Credentials"}), 400
+        
+
+       
     
-    user=User.query.filter_by(email=data.get("email")).first()
-    if user is not None:
-        return jsonify({"msg":"Email already in use"}), 400
-    
-    password_salt = b64encode(os.urandom(32)).decode('utf-8')
-    password_hash = set_password(data.get("password"), password_salt)
-
-    new_user = User(
-        name=data.get("name"), 	# name of the user
-        last_name=data.get("last_name"), 	# last name of the user
-        email=data.get("email"), 		# e-mail of the user
-        password=password_hash,		# password of the user, encrypted with salt
-        password_salt=password_salt		# password salt, encrypted with password_salt
-    )
-    db.session.add(new_user)
-    try:
-        db.session.commit()
-        return jsonify({"msg":"User succefully register"}) ,201
-    except Exception as error:
-        db.session.rollback()
-        return jsonify ({"msg":"Error register user", "error": str(error)}), 500
-  
-
-  
