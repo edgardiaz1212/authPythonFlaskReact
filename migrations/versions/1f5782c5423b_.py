@@ -26,8 +26,11 @@ def upgrade():
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('email')
+    sa.UniqueConstraint('email'),
+    sa.Column('name', sa.String(length=100), nullable=True),
+    sa.Column('last_name', sa.String(length=100), nullable=True)
     )
+    
     # ### end Alembic commands ###
 
 
