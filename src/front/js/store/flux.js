@@ -40,6 +40,24 @@ const getState = ({ getStore, getActions, setStore }) => {
 				  return response.status
 				}
 			  },
+
+			registerUser: async (user) => {
+				console.log(user)
+				const store = getStore()
+				try {
+				  let response = await fetch(`${process.env.BACKEND_URL}/user`, {
+					method: "POST",
+		
+					body: user
+				  })
+		
+				  let data = await response.json()
+		
+		
+				} catch (error) {
+				  return response.status
+				}
+			  },  
 			// Use getActions to call a function within a fuction
 			exampleFunction: () => {
 				getActions().changeColor(0, "green");

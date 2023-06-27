@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { Context } from "../store/appContext";
+import Swal from 'sweetalert2'
 
 const initialState = {
   email: "",
@@ -15,7 +16,15 @@ const Login = () => {
   const handleLogin = async () => {
     let response = await actions.login(user);
     if (response == 200) {
+      
       if (response == 400) {
+        Swal.fire({
+          title: 'Error!',
+          text: 'Not found',
+          icon: 'warning',
+          confirmButtonText: 'Cool'
+        })
+
       }
     }
   };

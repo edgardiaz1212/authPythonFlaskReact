@@ -1,54 +1,93 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useContext } from "react";
+import { Link } from "react-router-dom";
+import { Context } from "../store/appContext";
+import Swal from 'sweetalert2'
+
+const initialState = {
+  name: "",
+lastname: "",
+email: "",
+password: ""};
 
 const Signup = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const handleSignup = () => {
-    // Aquí puedes implementar la lógica para enviar los datos de registro al servidor
-    // Por ejemplo, puedes hacer una solicitud HTTP utilizando fetch() o axios
-    // y manejar la respuesta del servidor
-
-    // Ejemplo básico de solicitud utilizando fetch():
-    fetch('/api/signup', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ name, email, password }),
-    })
-      .then(response => response.json())
-      .then(data => {
-        // Aquí puedes manejar la respuesta del servidor
-        // Por ejemplo, redireccionar al usuario a otra página o mostrar un mensaje de éxito/error
-      })
-      .catch(error => {
-        // Aquí puedes manejar cualquier error de la solicitud
-        console.error('Error:', error);
-      });
+  
+  const [user, setUser]= useState(initialState)
+  const { actions } = useContext(Context)
+  const handleSignup = async () => {
+    if (!user.name || !user.email || !user.password) {
+      console.log("Por favor completa todos los campos");
+      return;
+    }
+  
+    try {
+      const response = await actions.registerUser(user);
+      if (response === 200) {
+        console.log("Registro exitoso");
+        // Realizar acciones adicionales después del registro exitoso, como redirigir a otra página
+        // history.push("/dashboard");
+      } else {
+        console.log("Error en el registro");
+      }
+    } catch (error) {
+      console.log("Error en la solicitud de registro:", error);
+    }
   };
+  
+  const handleChange = ({ target }) => {
+    setUser({ ...user, [target.name]: target.value })
+}
 
   return (
-    <div className='container'>
+    <div className="container">
       <h1>Signup</h1>
       <form>
         <div>
           <label>Name:</label>
-          <input type="text" value={name} onChange={e => setName(e.target.value)} />
+          <input
+            type="text"
+            value={user.name}
+            id="name"
+            name="name"
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <label>Last Name:</label>
+          <input
+            type="text"
+            value={user.lastnamename}
+            id="lastname"
+            name="lastname"
+            onChange={handleChange}
+          />
         </div>
         <div>
           <label>Email:</label>
-          <input type="email" value={email} onChange={e => setEmail(e.target.value)} />
+          <input
+            type="email"
+            value={user.email}
+            id="email"
+            name="email"
+            onChange={handleChange}
+          />
         </div>
         <div>
           <label>Password:</label>
-          <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
+          <input
+            type="password"
+            value={user.password}
+            id="password"
+            name="password"
+            onChange={handleChange}
+          />
         </div>
-        <button type="button" onClick={handleSignup}>Signup</button>
+        <button type="button" onClick={handleSignup}>
+          Signup
+        </button>
       </form>
-      <p>Ya tienes una cuenta? <Link to="/">Inicia sesión aquí</Link></p>
+      <p>
+        Ya tienes una cuenta? <Link to="/">Inicia sesión aquí</Link>
+      </p>
     </div>
   );
 };
