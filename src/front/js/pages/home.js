@@ -5,11 +5,8 @@ import "../../styles/home.css";
 import Login from "../component/Login.jsx";
 
 export const Home = () => {
-	const { store, actions } = useContext(Context);
+  const { store, actions } = useContext(Context);
 
-	return (
-		<div>
-      {store.token ? <p>Private</p> : <Login />}
-    </div>
-	);
+  return <div>{store.token ? <p>Private</p> : <Login />}
+  </div>;
 };

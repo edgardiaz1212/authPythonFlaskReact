@@ -20,47 +20,38 @@ def check_password(hash_password, password, salt):
 
 @api.route('/user', methods=['POST'])
 def register_user():
-    if request.method =="POST":
+    if request.method == "POST":
         data = request.json
 
-        if data is None:
-            return jsonify({"msg":"Missing JSON in request"}), 400
-        if data.get("name") is None:
-            return jsonify({"msg":"Missing Parameter"}), 400
-        if data.get("last_name") is None:
-            return jsonify({"msg":"Missing Parameter"}), 400
-        if data.get("email") is None:
-            return jsonify({"msg":"Missing Parameter"}), 400
-        if data.get("password") is None:
-            return jsonify({"msg":"Missing Parameter"}), 400
-        
-        user=User.query.filter_by(email=data.get("email")).first()
+        required_info = ["name", "lastname", "email", "password"]
+
+        for info in required_info:
+            if data.get(info) is None:
+                return jsonify({"msg": f"Missing {info} parameter"}), 400
+
+        user = User.query.filter_by(email=data.get("email")).first()
         if user is not None:
-            return jsonify({"msg":"Email already in use"}), 400
-        
-        # Generar una sal aleatoria 
+            return jsonify({"msg": "Email already in use"}), 400
+
         password_salt = b64encode(os.urandom(32)).decode('utf-8')
-       
-      # Concatenar la contraseña con la sal
         password_hash = set_password(data.get("password"), password_salt)
 
         new_user = User(
-            name=data.get("name"), 	
-            last_name=data.get("last_name"), 	
-            email=data.get("email"), 		
-            password=password_hash,		
-            salt=password_salt		
+            name=data.get("name"),
+            lastname=data.get("lastname"),
+            email=data.get("email"),
+            password=password_hash,
+            salt=password_salt
         )
-        
+
         db.session.add(new_user)
-        
+
         try:
             db.session.commit()
-            return jsonify({"msg":"User succefully register"}) ,201
+            return jsonify({"msg": "User successfully registered"}), 201
         except Exception as error:
             db.session.rollback()
-            return jsonify ({"msg":"Error register user", "error": str(error)}), 500
-
+            return jsonify({"msg": "Error registering user", "error": str(error)}), 500
 
 @api.route('/login', methods=['POST'])
 def login():

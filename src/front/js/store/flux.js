@@ -47,15 +47,18 @@ const getState = ({ getStore, getActions, setStore }) => {
 				try {
 				  let response = await fetch(`${process.env.BACKEND_URL}/user`, {
 					method: "POST",
-		
-					body: user
+					headers: {
+						"Content-Type": "application/json",
+					  },
+					  body: JSON.stringify(user),
 				  })
 		
 				  let data = await response.json()
-		
+				  return response.status
 		
 				} catch (error) {
-				  return response.status
+					console.log("Error registering user:", error);
+					return 500;
 				}
 			  },  
 			// Use getActions to call a function within a fuction
