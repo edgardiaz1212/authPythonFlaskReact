@@ -1,18 +1,18 @@
 import React, { useState, useContext } from "react";
-import { Link, useNavigate  } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
-import Swal from 'sweetalert2'
+import Swal from "sweetalert2";
 
 const initialState = {
   name: "",
-lastname: "",
-email: "",
-password: ""};
+  lastname: "",
+  email: "",
+  password: "",
+};
 
 const Signup = () => {
-  
-  const [user, setUser]= useState(initialState)
-  const { actions } = useContext(Context)
+  const [user, setUser] = useState(initialState);
+  const { actions } = useContext(Context);
   const navigate = useNavigate();
 
   const handleSignup = async () => {
@@ -20,13 +20,13 @@ const Signup = () => {
       console.log("Por favor completa todos los campos");
       return;
     }
-  
+
     try {
       const response = await actions.registerUser(user);
       if (response === 201 || 200) {
         console.log("Registro exitoso");
-        
-        navigate("/")
+
+        navigate("/");
       } else {
         console.log("Error en el registro");
       }
@@ -34,17 +34,17 @@ const Signup = () => {
       console.log("Error en la solicitud de registro:", error);
     }
   };
-  
+
   const handleChange = ({ target }) => {
-    setUser({ ...user, [target.name]: target.value })
-}
+    setUser({ ...user, [target.name]: target.value });
+  };
 
   return (
-    <div className="container">
+    <div className="container-fluid w-25 ">
       <h1>Signup</h1>
-      <form>
-        <div>
-          <label>Name:</label>
+      <form  >
+        <div className="mb-3 row ">
+          <label className="col-sm-2 col-form-label">Name:</label>
           <input
             type="text"
             value={user.name}
@@ -53,8 +53,8 @@ const Signup = () => {
             onChange={handleChange}
           />
         </div>
-        <div>
-          <label>Last Name:</label>
+        <div className="mb-3 row   ">
+          <label className="col-sm-3 col-form-label">Last Name:</label>
           <input
             type="text"
             value={user.lastname}
@@ -63,8 +63,8 @@ const Signup = () => {
             onChange={handleChange}
           />
         </div>
-        <div>
-          <label>Email:</label>
+        <div className="mb-3 row   ">
+          <label className="col-sm-2 col-form-label">Email:</label>
           <input
             type="email"
             value={user.email}
@@ -73,8 +73,8 @@ const Signup = () => {
             onChange={handleChange}
           />
         </div>
-        <div>
-          <label>Password:</label>
+        <div className="mb-3 row   ">
+          <label className="col-sm-2 col-form-label">Password:</label>
           <input
             type="password"
             value={user.password}
