@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
 import Swal from 'sweetalert2'
 
@@ -12,6 +12,7 @@ const Login = () => {
   const { actions } = useContext(Context);
 
   const [user, setUser] = useState(initialState);
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
     let response = await actions.login(user);
@@ -24,7 +25,8 @@ const Login = () => {
           icon: 'warning',
           confirmButtonText: 'Cool'
         })
-
+        await actions.getUserData;
+        navigate(`/private`);
       }
     }
   };

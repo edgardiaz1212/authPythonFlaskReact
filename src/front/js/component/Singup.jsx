@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate  } from "react-router-dom";
 import { Context } from "../store/appContext";
 import Swal from 'sweetalert2'
 
@@ -13,6 +13,8 @@ const Signup = () => {
   
   const [user, setUser]= useState(initialState)
   const { actions } = useContext(Context)
+  const navigate = useNavigate();
+
   const handleSignup = async () => {
     if (!user.name || !user.email || !user.password) {
       console.log("Por favor completa todos los campos");
@@ -21,10 +23,10 @@ const Signup = () => {
   
     try {
       const response = await actions.registerUser(user);
-      if (response === 200) {
+      if (response === 201 || 200) {
         console.log("Registro exitoso");
-        // Realizar acciones adicionales después del registro exitoso, como redirigir a otra página
-        // history.push("/dashboard");
+        
+        navigate("/")
       } else {
         console.log("Error en el registro");
       }
@@ -55,7 +57,7 @@ const Signup = () => {
           <label>Last Name:</label>
           <input
             type="text"
-            value={user.lastnamename}
+            value={user.lastname}
             id="lastname"
             name="lastname"
             onChange={handleChange}
